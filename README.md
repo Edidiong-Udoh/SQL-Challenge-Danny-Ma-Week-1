@@ -2,6 +2,16 @@
 
 ![](Danny_Ma.png)
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+*This repository hosts my solutions to the 1st challenge (Week 1) of the 8 Weeks SQL Challenge by DannyMa. [Click here to view the full challenge](https://8weeksqlchallenge.com/case-study-1/)*
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+## 🗒️Table of Content
+* [Business Case](
+
+
 ## Introduction
 This project contains the SQL query functions I used in solving the problem statements attached to this case study. It was fun and challenging at the same time. I love SQL because of its versatility. There are many ways to solve a problem and I applied my understanding of certain SQL functions in arriving at my answers.
 
