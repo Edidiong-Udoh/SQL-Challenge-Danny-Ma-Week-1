@@ -42,3 +42,11 @@ Danny shared 3 key datsets for this case:
       INNER JOIN menu m
       ON s.product_id = m.product_id
       GROUP BY customer_id
+
+![](Question_1.png)
+
+**2. How many days has each customer visited the restaurant?**
+
+      SELECT customer_id, count (distinct(order_date)) as Days_visited
+      FROM sales
+      GROUP BY customer_id
