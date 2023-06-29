@@ -36,8 +36,9 @@ Danny shared 3 key datsets for this case:
 
 ## Solution
 **1. What is the total amount each customer spent at the restaurant?**
-   SELECT customer_id, sum(price) as Amount_Spent
-   FROM sales s
-   INNER JOIN menu m
-   ON s.product_id = m.product_id
-   GROUP BY customer_id
+      
+      SELECT customer_id, sum(price) as Amount_Spent
+      FROM sales s
+      INNER JOIN menu m
+      ON s.product_id = m.product_id
+      GROUP BY customer_id
