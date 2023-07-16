@@ -14,7 +14,7 @@
 * [Available Data](https://github.com/Edidiong-Udoh/SQL-Challenge-Danny-Ma-Week-1/tree/main)
 * [Case Study Questions](https://github.com/Edidiong-Udoh/SQL-Challenge-Danny-Ma-Week-1/tree/main)
 * [Case Study Solutions](Case_Study_Solutions.md)
-* [Insight]
+* [Insight](https://github.com/Edidiong-Udoh/SQL-Challenge-Danny-Ma-Week-1/tree/main)
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -135,7 +135,7 @@ Danny shared 3 key datsets for this case:
 Based on my analysis, the following insights would be useful for Danny:
 * Customer A has spent more money in the store than the others. His favorite menu is ramen.
   
-| customer_id | %      |
+| customer_id | % of Total Income     |
 |-------------|--------|
 | A           | 40.86% |
 | B           | 39.78% |
