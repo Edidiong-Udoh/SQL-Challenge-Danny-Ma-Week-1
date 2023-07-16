@@ -12,7 +12,9 @@
 * [Business Case](https://github.com/Edidiong-Udoh/SQL-Challenge-Danny-Ma-Week-1/tree/main)
 * [Entity Relationship Diagram](https://github.com/Edidiong-Udoh/SQL-Challenge-Danny-Ma-Week-1/tree/main)
 * [Available Data](https://github.com/Edidiong-Udoh/SQL-Challenge-Danny-Ma-Week-1/tree/main)
-* [Case Study Solutions](https://github.com/Edidiong-Udoh/SQL-Challenge-Danny-Ma-Week-1/tree/main)
+* [Case Study Questions](https://github.com/Edidiong-Udoh/SQL-Challenge-Danny-Ma-Week-1/tree/main)
+* [Case Study Solutions](Case_Study_Solutions.md)
+* [Insight]
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -125,180 +127,23 @@ Danny shared 3 key datsets for this case:
 8. What is the total items and amount spent for each member before they became a member?
 9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
 10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## Case Study Solution
+* Click [here](Case_Study_Solutions.md) to view the Case Study Solution
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+## Insights
+Based on my analysis, the following insights would be useful for Danny:
+* Customer A has spent more money in the store than the others. His favorite menu is ramen.
+  
+| customer_id | %      |
+|-------------|--------|
+| A           | 40.86% |
+| B           | 39.78% |
+| C           | 19.36% |
 
-## Solution
-**1. What is the total amount each customer spent at the restaurant?**
-      
-      SELECT customer_id, sum(price) as Amount_Spent
-      FROM sales s
-      INNER JOIN menu m
-      ON s.product_id = m.product_id
-      GROUP BY customer_id
+* Customer B has visited the store more often than others and likes the 3 menus equally.
 
-![](Question_1.png)
+* Customer C is the least performing customer. He has only been to the store twice and bought ramen only. Also, he did not sign up for the members' program.
 
-
-**2. How many days has each customer visited the restaurant?**
-
-      SELECT customer_id, count (distinct(order_date)) as Days_visited
-      FROM sales
-      GROUP BY customer_id
-
-![](Question_2.png)
-
-
-**3. What was the first item from the menu purchased by each customer?**
-
-      WITH cte_first_date AS (
-      SELECT customer_id, product_name, order_date,
-      RANK() OVER(PARTITION BY customer_id ORDER BY order_date) AS rank
-      FROM sales
-      INNER JOIN menu
-      ON sales.product_id = menu.product_id
-       )
-
-      SELECT DISTINCT customer_id, product_name, order_date
-      FROM cte_first_date
-      WHERE rank = 1
-
-![](Question_3.png)
-
-
-**4. What is the most purchased item on the menu and how many times was it purchased by all customers?**
-
-     WITH Most_purchased AS (SELECT product_name, COUNT (product_name) as No_of_times_purchased
-     FROM Sales s
-     INNER JOIN menu m
-     ON s.product_id = m.product_id
-     GROUP BY product_name)
-
-     SELECT product_name, No_of_times_purchased
-     FROM Most_purchased
-     WHERE No_of_times_purchased = (
-     SELECT MAX(No_of_times_purchased)
-     FROM Most_purchased
-     );
-
-![](Question_4.png)
-
-
-**5. Which item was the most popular for each customer?**
- 
-
-    WITH Most_Popular AS (
-    SELECT customer_id, product_name, COUNT (product_name)as Times_Purchased
-    FROM Sales s
-    INNER JOIN Menu m
-    ON s.product_id = m.product_id
-    GROUP BY customer_id, product_name
-    )
-    SELECT customer_id, product_name, Times_Purchased
-    FROM ( 
-	SELECT *, RANK() OVER (PARTITION BY customer_id ORDER BY Times_Purchased DESC) as Popularity_Rank
-	FROM Most_Popular
-    ) subquery
-    WHERE Popularity_Rank = 1;
-
-![](Question_5.png)
-
-
-**6. Which item was purchased first by the customer after they became a member?**
-
-    WITH date_joined AS (SELECT s.customer_id, s.product_id, m.join_date
-    FROM members m
-    INNER JOIN sales s
-    ON m.customer_id = s.customer_id
-    WHERE join_date = order_date 
-    OR order_date > join_date)
-
-    SELECT customer_id, mm.product_name, join_date
-    FROM ( SELECT *, RANK() OVER(PARTITION BY customer_id ORDER BY product_id) AS first_item
-    FROM date_joined
-    )subquery
-    INNER JOIN Menu mm
-    ON subquery.product_id = mm.product_id
-    WHERE first_item = 1;
-
-![](Question_6.png)
-
-
-**7. Which item was purchased just before the customer became a member?**
-
-    WITH date_joined AS (SELECT s.customer_id, s.product_id, m.join_date, s.order_date
-    FROM members m
-    INNER JOIN sales s
-    ON m.customer_id = s.customer_id
-    WHERE order_date < join_date)
-
-    SELECT customer_id, mm.product_name, join_date, order_date
-    FROM (SELECT *, DENSE_RANK() OVER(PARTITION BY customer_id ORDER BY order_date DESC) as R_N
-    FROM date_joined
-    )subquery
-    INNER JOIN Menu mm
-    ON subquery.product_id = mm.product_id
-    WHERE R_N = 1;
-
-![](Question_7.png)
-
-
-**8. What is the total items and amount spent for each member before they became a member?**
-
-    WITH first_table AS (SELECT m.product_name, s.customer_id, s.product_id, s.order_date, mm.join_date,m.price
-    FROM Sales s
-    INNER JOIN Menu m
-    ON s.product_id = m.product_id
-    INNER JOIN Members mm
-    ON s.customer_id = mm.customer_id
-    WHERE order_date < join_date)
-
-    SELECT customer_id, count (product_id) as total_items, sum(price) as amount_spent
-    FROM first_table
-    GROUP BY customer_id
-
-![](Question_8.png)
-
-
-**9. If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?**
-
-    WITH cte_spent AS (SELECT customer_id, product_name, sum(price) as amount_spent
-    FROM Sales s
-    INNER JOIN Menu m
-    ON s.product_id = m.product_id
-    GROUP BY customer_id, product_name)
-
-    SELECT 
-	customer_id, 
-	SUM(CASE 
-			WHEN product_name = 'sushi' THEN amount_spent * 20
-		ELSE amount_spent * 10
-		END) as points
-    FROM cte_spent
-    GROUP BY customer_id; 
-
-![](Question_9.png)
-
-
-**10. In the first week after a customer joins the program (including their join date) they earn 2x points on all items, not just sushi - how many points do customer A and B have at the end of January?**
-
-    WITH Jan_record AS (SELECT s.customer_id, product_name, order_date, join_date, sum(price) as price
-    FROM Sales s
-    INNER JOIN Members mm
-    ON s.customer_id = mm.customer_id
-    INNER JOIN Menu m
-    ON s.product_id = m.product_id
-    GROUP BY s.customer_id, m.product_name, s.order_date, mm.join_date)
-
-    SELECT customer_id,
-    SUM(CASE
-	WHEN product_name = 'sushi' THEN price * 20
-	WHEN order_date < join_date THEN price * 10
-	WHEN order_date = join_date THEN price * 20
-	WHEN order_date < '2021-01-31' THEN price * 20
-	END) as points
-    FROM Jan_record
-    GROUP BY customer_id
-
-![](Question_10.png)
-
-
+* Although Customer A spent more money than others, Customer B actually spent a total of $40 before joining the members' program while Customer A spent $25. This means that Customer A was motivated to spend more because of the benefits the program offers. This is an indicator for the program to keep running because it has the potential of increasing sales. 
 
